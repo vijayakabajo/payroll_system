@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Upload Progress{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <a href="{% url 'bulk_upload:history' %}">Bulk Upload</a>
+  <span class="sep">/</span>
+  <span class="current">Upload #{{ bulk.pk }}</span>
+{% endblock %}
+
+{% block extra_style %}
+.progress-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+@media (max-width: 900px) {
+  .progress-stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 500px) {
+  .progress-stats { grid-template-columns: 1fr; }
+}
+.progress-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.progress-detail-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+.progress-detail-value {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+.progress-bar-large {
+  height: 12px;
+}
+.progress-percent {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--brand);
+  margin-top: 0.4rem;
+}
+.row-status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.row-status-icon.success {
+  background: var(--success-bg);
+  color: var(--success);
+}
+.row-status-icon.failed {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+.row-status-icon.pending {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+.error-text {
+  font-size: 0.75rem;
+  color: var(--danger);
+  max-width: 400px;
+  word-break: break-word;
+}
+{% endblock %}
+
+{% block content %}
+<div id="progress-container"
+     {% if bulk.status == 'processing' %}
+       hx-get="{% url 'bulk_upload:progress' pk=bulk.pk %}"
+       hx-trigger="every 2s"
+       hx-target="#progress-container"
+       hx-swap="outerHTML"
+     {% endif %}>
+
+  <!-- ── Header ───────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Upload Progress</h1>
+      <p class="page-subtitle">{{ bulk.filename }} · {{ bulk.month }} {{ bulk.year }}</p>
+    </div>
+    <div class="flex items-center gap-2">
+      {% if bulk.status == 'processing' %}
+        <span class="badge badge-info"><span class="badge-dot"></span> Processing…</span>
+        <span class="spinner"></span>
+      {% endif %}
+      <a href="{% url 'bulk_upload:history' %}" class="btn btn-secondary btn-sm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to History
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Stats ────────────────────────────────── -->
+  <div class="progress-stats">
+    <div class="stat-card">
+      <div class="stat-icon blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ bulk.total_rows }}</div>
+        <div class="stat-label">Total Rows</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ bulk.success_count }}</div>
+        <div class="stat-label">Succeeded</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon red">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{ bulk.failed_count }}</div>
+        <div class="stat-label">Failed</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon orange">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">
+          <span class="badge {{ bulk.status|status_badge_class }}">
+            <span class="badge-dot"></span> {{ bulk.status|status_label }}
+          </span>
+        </div>
+        <div class="stat-label">Status</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Progress bar ─────────────────────────── -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <div class="card-title">Processing Progress</div>
+      <div class="progress-percent">{{ bulk.progress_percent }}%</div>
+    </div>
+    <div class="progress-bar-wrap progress-bar-large">
+      <div class="progress-bar-fill" style="width: {{ bulk.progress_percent }}%;"></div>
+    </div>
+    <div class="flex justify-between mt-2" style="font-size: 0.75rem; color: var(--text-muted);">
+      <span>{{ bulk.success_count }} succeeded + {{ bulk.failed_count }} failed of {{ bulk.total_rows }} total</span>
+      <span>Uploaded {{ bulk.created_at|timesince }} ago</span>
+    </div>
+  </div>
+
+  <!-- ── Actions ──────────────────────────────── -->
+  {% if bulk.status != 'processing' %}
+  <div class="flex items-center gap-2 mb-4">
+    {% if bulk.error_report %}
+      <a href="{% url 'bulk_upload:error_report' pk=bulk.pk %}" class="btn btn-danger btn-sm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download Error Report
+      </a>
+    {% endif %}
+    <a href="{% url 'bulk_upload:upload' %}" class="btn btn-primary btn-sm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+        <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+        <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
+      </svg>
+      New Upload
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- ── Upload details ───────────────────────── -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <div class="card-title">Upload Details</div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem;">
+      <div class="progress-detail">
+        <span class="progress-detail-label">File</span>
+        <span class="progress-detail-value">{{ bulk.filename }}</span>
+      </div>
+      <div class="progress-detail">
+        <span class="progress-detail-label">Period</span>
+        <span class="progress-detail-value">{{ bulk.month }} {{ bulk.year }}</span>
+      </div>
+      <div class="progress-detail">
+        <span class="progress-detail-label">Uploaded By</span>
+        <span class="progress-detail-value">{{ bulk.uploaded_by }}</span>
+      </div>
+      <div class="progress-detail">
+        <span class="progress-detail-label">Uploaded At</span>
+        <span class="progress-detail-value">{{ bulk.created_at|date:"d M Y, h:i A" }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Results table ────────────────────────── -->
+  {% if bulk.status != 'processing' and rows %}
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Row Results</div>
+        <div class="card-subtitle">{{ rows|length }} row{{ rows|length|pluralize }}</div>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Row #</th>
+            <th>Employee Code</th>
+            <th>Status</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            <td class="td-muted">{{ row.row_number }}</td>
+            <td>
+              <span style="font-weight: 600;">{{ row.employee_code }}</span>
+            </td>
+            <td>
+              <span class="badge {{ row.status|status_badge_class }}">
+                <span class="badge-dot"></span> {{ row.status|status_label }}
+              </span>
+            </td>
+            <td>
+              {% if row.status == 'failed' %}
+                <span class="error-text">{{ row.error_message }}</span>
+              {% elif row.payslip %}
+                <span class="text-sm text-muted">Payslip #{{ row.payslip.pk }}</span>
+              {% else %}
+                <span class="text-sm text-muted">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

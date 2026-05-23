@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Generate Payslip{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <a href="{% url 'payroll:history' %}">Payroll</a>
+  <span class="sep">/</span>
+  <span class="current">Generate</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Generate Payslip</h1>
+    <p class="page-subtitle">Calculate and process employee salary</p>
+  </div>
+</div>
+
+<form method="post" class="card" style="padding:0;">
+  {% csrf_token %}
+  
+  {% if form.non_field_errors %}
+  <div style="padding:1.5rem 1.5rem 0;">
+    <div style="background:var(--danger-bg); border:1px solid var(--danger); border-radius:var(--radius-md); padding:1rem; color:var(--danger); font-size:.875rem;">
+      {{ form.non_field_errors }}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="grid-2" style="gap:0; align-items:stretch;">
+    <!-- Left Column: Core Info & Leave Data -->
+    <div style="padding:2rem; border-right:1px solid var(--border-light);">
+      <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:1.5rem; color:var(--text-primary);">Basic Information</h3>
+      
+      <div class="form-group">
+        <label class="form-label" for="{{ form.employee.id_for_label }}">Employee <span style="color:var(--danger);">*</span></label>
+        {{ form.employee }}
+        {{ form.employee.errors }}
+        <p class="form-help">Select an active employee</p>
+      </div>
+      
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label" for="{{ form.month.id_for_label }}">Month <span style="color:var(--danger);">*</span></label>
+          {{ form.month }}
+          {{ form.month.errors }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="{{ form.year.id_for_label }}">Year <span style="color:var(--danger);">*</span></label>
+          {{ form.year }}
+          {{ form.year.errors }}
+        </div>
+      </div>
+      
+      <h3 style="font-size:1.1rem; font-weight:600; margin:2rem 0 1.5rem; color:var(--text-primary); border-top:1px solid var(--border-light); padding-top:2rem;">Attendance & Leave</h3>
+      
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label" for="{{ form.paid_days.id_for_label }}">Paid Days <span style="color:var(--danger);">*</span></label>
+          {{ form.paid_days }}
+          {{ form.paid_days.errors }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="{{ form.total_days.id_for_label }}">Total Days <span style="color:var(--danger);">*</span></label>
+          {{ form.total_days }}
+          {{ form.total_days.errors }}
+        </div>
+      </div>
+      
+      <div class="grid-2" style="margin-top:1rem;">
+        <div class="form-group">
+          <label class="form-label" for="{{ form.cl_taken.id_for_label }}">Casual Leave (CL)</label>
+          {{ form.cl_taken }}
+          {{ form.cl_taken.errors }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="{{ form.sl_taken.id_for_label }}">Sick Leave (SL)</label>
+          {{ form.sl_taken }}
+          {{ form.sl_taken.errors }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="{{ form.lwp_taken.id_for_label }}">LWP (Leave W/O Pay)</label>
+          {{ form.lwp_taken }}
+          {{ form.lwp_taken.errors }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="{{ form.ml_taken.id_for_label }}">Medical Leave (ML)</label>
+          {{ form.ml_taken }}
+          {{ form.ml_taken.errors }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="{{ form.pl_taken.id_for_label }}">Privilege Leave (PL)</label>
+          {{ form.pl_taken }}
+          {{ form.pl_taken.errors }}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right Column: Component Overrides -->
+    <div style="padding:2rem; background:var(--bg-subtle);">
+      <div style="margin-bottom:1.5rem;">
+        <h3 style="font-size:1.1rem; font-weight:600; color:var(--text-primary);">Manual Overrides</h3>
+        <p class="text-sm text-muted">Leave blank to use the employee's salary structure or system defaults.</p>
+      </div>
+      
+      <div class="grid-2">
+        <!-- Earnings Overrides -->
+        <div>
+          <h4 style="font-size:.9rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--success); margin-bottom:1rem;">Earnings</h4>
+          {% for field in form %}
+            {% if field.name|startswith:'override_' and field.field.widget.attrs.data_component_type == 'earning' %}
+            <div class="form-group">
+              <label class="form-label" for="{{ field.id_for_label }}" style="font-size:.8rem;">{{ field.label }}</label>
+              <div style="position:relative;">
+                <span style="position:absolute; left:12px; top:10px; color:var(--text-muted); font-size:.875rem;">₹</span>
+                {{ field }}
+              </div>
+              <p class="form-help" style="font-size:.7rem;">{{ field.help_text }}</p>
+              {{ field.errors }}
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        
+        <!-- Deductions Overrides -->
+        <div>
+          <h4 style="font-size:.9rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--danger); margin-bottom:1rem;">Deductions</h4>
+          {% for field in form %}
+            {% if field.name|startswith:'override_' and field.field.widget.attrs.data_component_type == 'deduction' %}
+            <div class="form-group">
+              <label class="form-label" for="{{ field.id_for_label }}" style="font-size:.8rem;">{{ field.label }}</label>
+              <div style="position:relative;">
+                <span style="position:absolute; left:12px; top:10px; color:var(--text-muted); font-size:.875rem;">₹</span>
+                {{ field }}
+              </div>
+              <p class="form-help" style="font-size:.7rem;">{{ field.help_text }}</p>
+              {{ field.errors }}
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:1.5rem 2rem; border-top:1px solid var(--border-light); background:var(--bg-card); display:flex; justify-content:flex-end; gap:1rem; border-radius:0 0 var(--radius-lg) var(--radius-lg);">
+    <a href="{% url 'payroll:history' %}" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+      Generate Payslip
+    </button>
+  </div>
+</form>
+
+<style>
+  /* Fix absolute positioning for inputs with currency symbols */
+  .form-group input[name^="override_"] {
+    padding-left: 28px !important;
+  }
+</style>
+{% endblock %}

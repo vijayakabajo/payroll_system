@@ -1,0 +1,38 @@
+<form hx-post="{% url 'payroll:salary_structure' employee.pk %}" hx-target="#salary-structure-container" hx-swap="outerHTML">
+  {% csrf_token %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Type</th>
+          <th>Calculation</th>
+          <th style="width:150px;">Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for struct in structures %}
+        <tr>
+          <td class="font-medium">{{ struct.component.name }}</td>
+          <td>
+            {% if struct.component.component_type == 'earning' %}
+              <span class="badge badge-success">Earning</span>
+            {% else %}
+              <span class="badge badge-danger">Deduction</span>
+            {% endif %}
+          </td>
+          <td class="text-sm text-muted">{{ struct.component.calculation_description }}</td>
+          <td>
+            <input type="number" name="amount_{{ struct.component.pk }}" value="{{ struct.amount|floatformat:2 }}" class="form-control" step="0.01" style="padding:.25rem .5rem;" {% if struct.component.calculation_type != 'manual' %}readonly title="Calculated automatically" style="background:var(--bg-subtle); color:var(--text-muted);"{% endif %}>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center text-muted">No active salary components configured.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:1rem; display:flex; justify-content:flex-end;">
+    <button type="submit" class="btn btn-primary btn-sm">Save Structure</button>
+  </div>
+</form>

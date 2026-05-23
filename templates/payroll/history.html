@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Payslip History{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <span class="current">Payslip History</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Payslip History</h1>
+    <p class="page-subtitle">View and manage generated payslips</p>
+  </div>
+  <div class="flex gap-2">
+    <a href="{% url 'payroll:generate' %}" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M12 5v14M5 12h14"/></svg>
+      Generate Payslip
+    </a>
+  </div>
+</div>
+
+<div class="card" style="padding:0; overflow:hidden;">
+  <div class="card-header" style="padding:1rem 1.25rem;">
+    <form method="get" class="flex gap-3" style="width:100%; align-items:center;">
+      <div style="flex:1; max-width:300px; position:relative;">
+        <svg style="position:absolute; left:12px; top:10px; color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search employee..." style="padding-left:36px; padding-top:6px; padding-bottom:6px;">
+      </div>
+      <div style="width:150px;">
+        <select name="month" class="form-control" style="padding-top:6px; padding-bottom:6px;">
+          <option value="">All Months</option>
+          <option value="January" {% if month == 'January' %}selected{% endif %}>January</option>
+          <option value="February" {% if month == 'February' %}selected{% endif %}>February</option>
+          <option value="March" {% if month == 'March' %}selected{% endif %}>March</option>
+          <option value="April" {% if month == 'April' %}selected{% endif %}>April</option>
+          <option value="May" {% if month == 'May' %}selected{% endif %}>May</option>
+          <option value="June" {% if month == 'June' %}selected{% endif %}>June</option>
+          <option value="July" {% if month == 'July' %}selected{% endif %}>July</option>
+          <option value="August" {% if month == 'August' %}selected{% endif %}>August</option>
+          <option value="September" {% if month == 'September' %}selected{% endif %}>September</option>
+          <option value="October" {% if month == 'October' %}selected{% endif %}>October</option>
+          <option value="November" {% if month == 'November' %}selected{% endif %}>November</option>
+          <option value="December" {% if month == 'December' %}selected{% endif %}>December</option>
+        </select>
+      </div>
+      <div style="width:100px;">
+        <input type="number" name="year" value="{{ year|default:'' }}" class="form-control" placeholder="Year" style="padding-top:6px; padding-bottom:6px;">
+      </div>
+      <button type="submit" class="btn btn-secondary" style="padding:.4rem 1rem;">Filter</button>
+      {% if search_query or month or year %}
+      <a href="{% url 'payroll:history' %}" class="btn btn-secondary" style="padding:.4rem 1rem; border:none;">Clear</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Period</th>
+          <th>Gross Earned</th>
+          <th>Deductions</th>
+          <th>Net Salary</th>
+          <th>Status</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for payslip in payslips %}
+        <tr>
+          <td>
+            <div style="font-weight:600; color:var(--text-primary);">{{ payslip.employee.full_name }}</div>
+            <div style="font-size:.75rem; color:var(--text-muted);">{{ payslip.employee.employee_code }}</div>
+          </td>
+          <td class="font-semibold">{{ payslip.month }} {{ payslip.year }}</td>
+          <td>{{ payslip.gross_earned|currency }}</td>
+          <td>{{ payslip.total_deductions|currency }}</td>
+          <td style="color:var(--success); font-weight:600;">{{ payslip.net_salary|currency }}</td>
+          <td>
+            <span class="badge {{ payslip.generation_status|status_badge_class }}">
+              <span class="badge-dot"></span>
+              {{ payslip.generation_status|status_label }}
+            </span>
+          </td>
+          <td style="text-align:right;">
+            <div class="flex gap-2" style="justify-content:flex-end;">
+              <a href="{% url 'payroll:detail' payslip.pk %}" class="btn btn-secondary btn-xs" title="View Details">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                View
+              </a>
+              {% if payslip.pdf_file %}
+              <a href="{% url 'payroll:download' payslip.pk %}" class="btn btn-secondary btn-xs" title="Download PDF">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                PDF
+              </a>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" style="padding:3rem; text-align:center;">
+            <p class="text-muted">No payslips found matching your criteria.</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+  {% if payslips.has_other_pages %}
+  <div style="padding:1rem 1.25rem; border-top:1px solid var(--border-light); display:flex; justify-content:center;">
+    {% include 'components/_pagination.html' with page_obj=payslips %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

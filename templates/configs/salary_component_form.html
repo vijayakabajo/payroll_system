@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <a href="{% url 'configs:salary_components' %}">Salary Components</a>
+  <span class="sep">/</span>
+  <span class="current">{{ title }}</span>
+{% endblock %}
+
+{% block extra_style %}
+.component-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 700px) {
+  .component-form-grid { grid-template-columns: 1fr; }
+}
+.checkbox-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0;
+}
+.checkbox-wrap input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+.checkbox-wrap label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">{{ title }}</h1>
+    <p class="page-subtitle">{% if is_edit %}Update the salary component details{% else %}Define a new salary component{% endif %}</p>
+  </div>
+  <a href="{% url 'configs:salary_components' %}" class="btn btn-secondary">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;">
+      <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+    </svg>
+    Back to Components
+  </a>
+</div>
+
+<div class="card" style="max-width:800px;">
+  <form method="post">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+    <div style="background:var(--danger-bg);border:1px solid var(--danger);border-radius:var(--radius-md);padding:0.75rem 1rem;margin-bottom:1.25rem;">
+      {% for error in form.non_field_errors %}
+      <p class="text-danger text-sm">{{ error }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="component-form-grid">
+      <!-- Code -->
+      <div class="form-group">
+        <label class="form-label" for="id_code">Component Code *</label>
+        {{ form.code }}
+        {% if form.code.errors %}<p class="text-danger text-xs mt-1">{{ form.code.errors.0 }}</p>{% endif %}
+      </div>
+
+      <!-- Name -->
+      <div class="form-group">
+        <label class="form-label" for="id_name">Component Name *</label>
+        {{ form.name }}
+        {% if form.name.errors %}<p class="text-danger text-xs mt-1">{{ form.name.errors.0 }}</p>{% endif %}
+      </div>
+
+      <!-- Type -->
+      <div class="form-group">
+        <label class="form-label" for="id_component_type">Type *</label>
+        {{ form.component_type }}
+        {% if form.component_type.errors %}<p class="text-danger text-xs mt-1">{{ form.component_type.errors.0 }}</p>{% endif %}
+      </div>
+
+      <!-- Calculation Type -->
+      <div class="form-group">
+        <label class="form-label" for="id_calculation_type">Calculation Type *</label>
+        {{ form.calculation_type }}
+        {% if form.calculation_type.errors %}<p class="text-danger text-xs mt-1">{{ form.calculation_type.errors.0 }}</p>{% endif %}
+      </div>
+
+      <!-- Percentage Value -->
+      <div class="form-group">
+        <label class="form-label" for="id_percentage_value">Percentage Value</label>
+        {{ form.percentage_value }}
+        <p class="text-muted text-xs mt-1">Required for Percentage type (e.g. 40 for 40%)</p>
+        {% if form.percentage_value.errors %}<p class="text-danger text-xs mt-1">{{ form.percentage_value.errors.0 }}</p>{% endif %}
+      </div>
+
+      <!-- Fixed Value -->
+      <div class="form-group">
+        <label class="form-label" for="id_fixed_value">Fixed Value (₹)</label>
+        {{ form.fixed_value }}
+        <p class="text-muted text-xs mt-1">Required for Fixed type</p>
+        {% if form.fixed_value.errors %}<p class="text-danger text-xs mt-1">{{ form.fixed_value.errors.0 }}</p>{% endif %}
+      </div>
+
+      <!-- Based On Component -->
+      <div class="form-group">
+        <label class="form-label" for="id_based_on_component">Based On Component</label>
+        {{ form.based_on_component }}
+        <p class="text-muted text-xs mt-1">For Percentage type — leave None for Gross-based</p>
+        {% if form.based_on_component.errors %}<p class="text-danger text-xs mt-1">{{ form.based_on_component.errors.0 }}</p>{% endif %}
+      </div>
+
+      <!-- Display Order -->
+      <div class="form-group">
+        <label class="form-label" for="id_display_order">Display Order</label>
+        {{ form.display_order }}
+        {% if form.display_order.errors %}<p class="text-danger text-xs mt-1">{{ form.display_order.errors.0 }}</p>{% endif %}
+      </div>
+    </div>
+
+    <!-- Is Active -->
+    <div class="form-group">
+      <div class="checkbox-wrap">
+        {{ form.is_active }}
+        <label for="id_is_active">Active</label>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2" style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);">
+      <button type="submit" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        {% if is_edit %}Update Component{% else %}Create Component{% endif %}
+      </button>
+      <a href="{% url 'configs:salary_components' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

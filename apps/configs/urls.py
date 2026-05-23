@@ -1,12 +1,12 @@
 from django.urls import path
-from django.http import HttpResponse
+from . import views
 
 app_name = 'configs'
 
-def placeholder_view(request):
-    return HttpResponse("Placeholder")
-
 urlpatterns = [
-    path('salary-components/', placeholder_view, name='salary_components'),
-    path('system-settings/', placeholder_view, name='system_settings'),
+    path('salary-components/', views.salary_components_list, name='salary_components'),
+    path('salary-components/add/', views.salary_component_create, name='salary_component_create'),
+    path('salary-components/<int:pk>/edit/', views.salary_component_edit, name='salary_component_edit'),
+    path('salary-components/<int:pk>/delete/', views.salary_component_delete, name='salary_component_delete'),
+    path('system-settings/', views.system_settings, name='system_settings'),
 ]

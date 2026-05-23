@@ -58,3 +58,9 @@ def active_nav(request, url_name):
     except Exception:
         pass
     return ''
+
+@register.filter
+def startswith(value, arg):
+    """Check if a string starts with a given prefix."""
+    return str(value).startswith(str(arg))
+

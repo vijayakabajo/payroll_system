@@ -1,13 +1,13 @@
 from django.urls import path
-from django.http import HttpResponse
+from . import views
 
 app_name = 'payroll'
 
-def placeholder_view(request):
-    return HttpResponse("Placeholder")
-
 urlpatterns = [
-    path('generate/', placeholder_view, name='generate'),
-    path('history/', placeholder_view, name='history'),
-    path('download/<int:pk>/', placeholder_view, name='download'),
+    path('generate/', views.generate_payslip, name='generate'),
+    path('history/', views.payslip_history, name='history'),
+    path('<int:pk>/', views.payslip_detail, name='detail'),
+    path('<int:pk>/download/', views.payslip_download, name='download'),
+    path('<int:pk>/delete/', views.payslip_delete, name='delete'),
+    path('salary-structure/<int:employee_pk>/', views.employee_salary_structure, name='salary_structure'),
 ]

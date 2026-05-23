@@ -1,12 +1,12 @@
 from django.urls import path
-from django.http import HttpResponse
+from . import views
 
 app_name = 'bulk_upload'
 
-def placeholder_view(request):
-    return HttpResponse("Placeholder")
-
 urlpatterns = [
-    path('upload/', placeholder_view, name='upload'),
-    path('history/', placeholder_view, name='history'),
+    path('upload/', views.upload_view, name='upload'),
+    path('upload/<int:pk>/progress/', views.upload_progress, name='progress'),
+    path('history/', views.upload_history, name='history'),
+    path('template/', views.download_template, name='download_template'),
+    path('<int:pk>/errors/', views.download_error_report, name='error_report'),
 ]

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Payslip Detail{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <a href="{% url 'payroll:history' %}">Payroll</a>
+  <span class="sep">/</span>
+  <span class="current">{{ payslip.employee.employee_code }} — {{ payslip.month }} {{ payslip.year }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">{{ payslip.employee.full_name }}</h1>
+    <p class="page-subtitle">Payslip for {{ payslip.month }} {{ payslip.year }} &bull; {{ payslip.employee.employee_code }}</p>
+  </div>
+  <div class="flex gap-2">
+    <form method="post" action="{% url 'payroll:delete' payslip.pk %}" onsubmit="return confirm('Are you sure you want to delete this payslip?');">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+        Delete
+      </button>
+    </form>
+    
+    {% if payslip.pdf_file %}
+    <a href="{% url 'payroll:download' payslip.pk %}" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download PDF
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="grid-4" style="margin-bottom:1.5rem;">
+  <div class="stat-card" style="padding:1.25rem;">
+    <div class="stat-label">Gross Entitled</div>
+    <div class="stat-value" style="font-size:1.5rem; margin-top:.5rem;">{{ payslip.gross_salary|currency }}</div>
+  </div>
+  <div class="stat-card" style="padding:1.25rem;">
+    <div class="stat-label">Gross Earned</div>
+    <div class="stat-value" style="font-size:1.5rem; margin-top:.5rem;">{{ payslip.gross_earned|currency }}</div>
+  </div>
+  <div class="stat-card" style="padding:1.25rem;">
+    <div class="stat-label" style="color:var(--danger);">Total Deductions</div>
+    <div class="stat-value" style="font-size:1.5rem; margin-top:.5rem; color:var(--danger);">{{ payslip.total_deductions|currency }}</div>
+  </div>
+  <div class="stat-card" style="padding:1.25rem; background:linear-gradient(135deg, var(--success-bg), #dcfce7); border-color:var(--success);">
+    <div class="stat-label" style="color:#166534;">Net Salary</div>
+    <div class="stat-value" style="font-size:1.5rem; margin-top:.5rem; color:#166534;">{{ payslip.net_salary|currency }}</div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:1.5rem;">
+  <div style="background:var(--bg-subtle); padding:1rem 1.5rem; border-radius:var(--radius-md); font-size:.875rem; display:flex; gap:2rem; flex-wrap:wrap;">
+    <div><span class="text-muted">Paid Days:</span> <strong style="color:var(--text-primary);">{{ payslip.paid_days }}/{{ payslip.total_days }}</strong></div>
+    <div><span class="text-muted">CL:</span> <strong style="color:var(--text-primary);">{{ payslip.cl_taken|floatformat:1 }}</strong></div>
+    <div><span class="text-muted">SL:</span> <strong style="color:var(--text-primary);">{{ payslip.sl_taken|floatformat:1 }}</strong></div>
+    <div><span class="text-muted">LWP:</span> <strong style="color:var(--text-primary);">{{ payslip.lwp_taken|floatformat:1 }}</strong></div>
+    <div><span class="text-muted">ML:</span> <strong style="color:var(--text-primary);">{{ payslip.ml_taken|floatformat:1 }}</strong></div>
+    <div><span class="text-muted">PL:</span> <strong style="color:var(--text-primary);">{{ payslip.pl_taken|floatformat:1 }}</strong></div>
+    <div><span class="text-muted">Status:</span> <span class="badge {{ payslip.generation_status|status_badge_class }}" style="margin-left:.25rem;"><span class="badge-dot"></span>{{ payslip.generation_status|status_label }}</span></div>
+  </div>
+</div>
+
+<!-- Detailed Tables -->
+<div class="grid-2" style="align-items:start; gap:1.5rem;">
+  <!-- Earnings -->
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div class="card-header" style="background:var(--success-bg); border-bottom:1px solid #bbf7d0; padding:1rem 1.25rem;">
+      <div class="card-title" style="color:#166534;">Earnings Details</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th style="text-align:right;">Entitled</th>
+            <th style="text-align:right;">Earned</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in earnings %}
+          <tr>
+            <td class="font-medium">{{ item.component_name }}</td>
+            <td style="text-align:right; color:var(--text-muted);">{{ item.entitled_amount|currency }}</td>
+            <td style="text-align:right; font-weight:600; color:var(--success);">{{ item.earned_amount|currency }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="3" class="text-center text-muted">No earnings components.</td></tr>
+          {% endfor %}
+        </tbody>
+        <tfoot style="background:var(--bg-subtle); font-weight:700;">
+          <tr>
+            <td style="padding:.75rem 1rem;">Total Earnings</td>
+            <td style="text-align:right; padding:.75rem 1rem; color:var(--text-muted);">{{ payslip.gross_salary|currency }}</td>
+            <td style="text-align:right; padding:.75rem 1rem; color:var(--success);">{{ payslip.gross_earned|currency }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- Deductions -->
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div class="card-header" style="background:var(--danger-bg); border-bottom:1px solid #fecaca; padding:1rem 1.25rem;">
+      <div class="card-title" style="color:#991b1b;">Deductions Details</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th style="text-align:right;">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in deductions %}
+          <tr>
+            <td class="font-medium">{{ item.component_name }}</td>
+            <td style="text-align:right; font-weight:600; color:var(--danger);">{{ item.earned_amount|currency }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="2" class="text-center text-muted" style="padding:2rem;">No deduction components.</td></tr>
+          {% endfor %}
+        </tbody>
+        <tfoot style="background:var(--bg-subtle); font-weight:700;">
+          <tr>
+            <td style="padding:.75rem 1rem;">Total Deductions</td>
+            <td style="text-align:right; padding:.75rem 1rem; color:var(--danger);">{{ payslip.total_deductions|currency }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
