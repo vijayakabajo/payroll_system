@@ -28,9 +28,18 @@
   <form method="get" class="flex flex-wrap items-center gap-2">
     <select name="month" class="form-control" style="width: 180px;">
       <option value="">All Months</option>
-      {% for m in "January,February,March,April,May,June,July,August,September,October,November,December".split %}
-        <option value="{{ m }}" {% if month == m %}selected{% endif %}>{{ m }}</option>
-      {% endfor %}
+      <option value="January" {% if month == 'January' %}selected{% endif %}>January</option>
+      <option value="February" {% if month == 'February' %}selected{% endif %}>February</option>
+      <option value="March" {% if month == 'March' %}selected{% endif %}>March</option>
+      <option value="April" {% if month == 'April' %}selected{% endif %}>April</option>
+      <option value="May" {% if month == 'May' %}selected{% endif %}>May</option>
+      <option value="June" {% if month == 'June' %}selected{% endif %}>June</option>
+      <option value="July" {% if month == 'July' %}selected{% endif %}>July</option>
+      <option value="August" {% if month == 'August' %}selected{% endif %}>August</option>
+      <option value="September" {% if month == 'September' %}selected{% endif %}>September</option>
+      <option value="October" {% if month == 'October' %}selected{% endif %}>October</option>
+      <option value="November" {% if month == 'November' %}selected{% endif %}>November</option>
+      <option value="December" {% if month == 'December' %}selected{% endif %}>December</option>
     </select>
 
     <input type="number" name="year" class="form-control" style="width: 120px;"
