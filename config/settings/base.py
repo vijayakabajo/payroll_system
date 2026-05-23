@@ -5,6 +5,10 @@ Django base settings for Minu Marketing Payslip Generator System.
 import os
 from pathlib import Path
 import environ
+import dj_database_url
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -15,7 +19,7 @@ environ.Env.read_env(BASE_DIR / '.env')
 
 # Security
 SECRET_KEY = env('SECRET_KEY')
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 DJANGO_APPS = [
@@ -82,20 +86,25 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
-# Database — PostgreSQL
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST', default='localhost'),
-        'PORT': env('DB_PORT', default='5432'),
-        'OPTIONS': {
-            'connect_timeout': 10,
-        },
+# Database — PostgreSQL (Render or Local Fallback)
+if os.environ.get("DATABASE_URL") and os.environ.get("DATABASE_URL") != "postgresql://payroll_user:O1AVVvxKUwT3YICWy0HtyUeGCJL6UJmb@dpg-d88ligbeo5us7382iq30-a.oregon-postgres.render.com/jalan_groups":
+    DATABASES = {
+        'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME', default='jalan_groups'),
+            'USER': env('DB_USER', default='postgres'),
+            'PASSWORD': env('DB_PASSWORD', default='12345'),
+            'HOST': env('DB_HOST', default='localhost'),
+            'PORT': env('DB_PORT', default='5432'),
+            'OPTIONS': {
+                'connect_timeout': 10,
+            },
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
