@@ -81,7 +81,7 @@ def generate_payslip(request):
                 'field': form[field_key],
                 'component': comp,
             }
-            if comp.component_type == 'EARNING':
+            if comp.component_type == 'earning':
                 earning_fields.append(field_info)
             else:
                 deduction_fields.append(field_info)
@@ -148,8 +148,8 @@ def payslip_detail(request, pk):
         pk=pk,
     )
     items = payslip.items.all().order_by('display_order')
-    earnings = [i for i in items if i.component_type == 'EARNING']
-    deductions = [i for i in items if i.component_type == 'DEDUCTION']
+    earnings = [i for i in items if i.component_type == 'earning']
+    deductions = [i for i in items if i.component_type == 'deduction']
 
     context = {
         'payslip': payslip,

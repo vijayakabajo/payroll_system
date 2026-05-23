@@ -19,8 +19,8 @@ class PayslipPDFGenerator:
             employee = payslip.employee
             items = payslip.items.all()
             
-            earnings = [item for item in items if item.component_type == 'EARNING']
-            deductions = [item for item in items if item.component_type == 'DEDUCTION']
+            earnings = [item for item in items if item.component_type == 'earning']
+            deductions = [item for item in items if item.component_type == 'deduction']
             
             # Fetch company config (mocked via SystemConfiguration or fallback)
             from apps.configs.models import SystemConfiguration

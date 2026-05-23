@@ -23,7 +23,7 @@ class PayrollLineItem:
     """A single calculated line item."""
     component_code: str
     component_name: str
-    component_type: str  # 'EARNING' or 'DEDUCTION'
+    component_type: str  # 'earning' or 'deduction'
     entitled_amount: Decimal = Decimal('0')
     earned_amount: Decimal = Decimal('0')
     display_order: int = 0
@@ -45,11 +45,11 @@ class PayrollResult:
 
     @property
     def earnings(self):
-        return [i for i in self.items if i.component_type == 'EARNING']
+        return [i for i in self.items if i.component_type == 'earning']
 
     @property
     def deductions(self):
-        return [i for i in self.items if i.component_type == 'DEDUCTION']
+        return [i for i in self.items if i.component_type == 'deduction']
 
 
 class PayrollEngine:
@@ -108,8 +108,8 @@ class PayrollEngine:
         items: List[PayrollLineItem] = []
 
         # Process earnings first
-        earning_components = [c for c in components if c.component_type == 'EARNING']
-        deduction_components = [c for c in components if c.component_type == 'DEDUCTION']
+        earning_components = [c for c in components if c.component_type == 'earning']
+        deduction_components = [c for c in components if c.component_type == 'deduction']
 
         for comp in earning_components:
             amount = self._resolve_amount(comp, overrides, structure_map, resolved)
@@ -124,7 +124,7 @@ class PayrollEngine:
             items.append(PayrollLineItem(
                 component_code=comp.code,
                 component_name=comp.name,
-                component_type='EARNING',
+                component_type='earning',
                 entitled_amount=amount,
                 earned_amount=earned,
                 display_order=comp.display_order,
@@ -158,14 +158,14 @@ class PayrollEngine:
             items.append(PayrollLineItem(
                 component_code=comp.code,
                 component_name=comp.name,
-                component_type='DEDUCTION',
+                component_type='deduction',
                 entitled_amount=amount,
                 earned_amount=amount,  # Deductions are not prorated
                 display_order=comp.display_order,
             ))
 
         total_deductions = sum(
-            (i.earned_amount for i in items if i.component_type == 'DEDUCTION'),
+            (i.earned_amount for i in items if i.component_type == 'deduction'),
             Decimal('0'),
         )
         net_salary = (gross_earned - total_deductions).quantize(TWO_PLACES, ROUND_HALF_UP)

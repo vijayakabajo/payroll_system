@@ -23,7 +23,7 @@
           </td>
           <td class="text-sm text-muted">{{ struct.component.calculation_description }}</td>
           <td>
-            <input type="number" name="amount_{{ struct.component.pk }}" value="{{ struct.amount|floatformat:2 }}" class="form-control" step="0.01" style="padding:.25rem .5rem;" {% if struct.component.calculation_type != 'manual' %}readonly title="Calculated automatically" style="background:var(--bg-subtle); color:var(--text-muted);"{% endif %}>
+            <input type="number" name="amount_{{ struct.component.code }}" value="{{ struct.amount|floatformat:2 }}" class="form-control" step="0.01" style="padding:.25rem .5rem;" {% if struct.component.calculation_type != 'manual' %}readonly title="Calculated automatically" style="background:var(--bg-subtle); color:var(--text-muted);"{% endif %}>
           </td>
         </tr>
         {% empty %}
