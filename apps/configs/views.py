@@ -8,10 +8,10 @@ from .forms import SalaryComponentForm, SystemConfigForm
 def salary_components_list(request):
     """List all salary components grouped by type."""
     earnings = SalaryComponent.objects.filter(
-        component_type='EARNING', is_active=True
+        component_type='earning', is_active=True
     ).order_by('display_order')
     deductions = SalaryComponent.objects.filter(
-        component_type='DEDUCTION', is_active=True
+        component_type='deduction', is_active=True
     ).order_by('display_order')
 
     context = {
