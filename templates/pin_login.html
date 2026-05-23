@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — Minu Marketing Payslip System</title>
+  <meta name="description" content="Secure PIN login for Minu Marketing Pvt Ltd Payslip Management System"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  {% load static %}
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand-orange: #f97316;
+      --brand-orange-dark: #ea580c;
+      --brand-red: #dc2626;
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --bg-input: #0f172a;
+      --text-primary: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Animated background orbs */
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      animation: drift 8s ease-in-out infinite alternate;
+    }
+    body::before {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #f97316, #dc2626);
+      top: -200px; left: -200px;
+    }
+    body::after {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #7c3aed, #1d4ed8);
+      bottom: -150px; right: -150px;
+      animation-delay: -4s;
+    }
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(30px, 20px) scale(1.05); }
+    }
+
+    .login-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 420px;
+      padding: 1.5rem;
+    }
+
+    .login-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05) inset;
+      backdrop-filter: blur(20px);
+    }
+
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo-img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--brand-orange);
+      box-shadow: 0 0 30px rgba(249,115,22,0.4);
+      margin-bottom: 1rem;
+    }
+
+    .company-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-align: center;
+      letter-spacing: -0.02em;
+    }
+
+    .company-tagline {
+      font-size: 0.75rem;
+      color: var(--brand-orange);
+      text-align: center;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 0.2rem;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border), transparent);
+      margin: 1.5rem 0;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 0.4rem;
+    }
+
+    .subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .pin-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+
+    .pin-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 0.875rem 1rem;
+      font-size: 1.5rem;
+      font-family: 'Inter', monospace;
+      color: var(--text-primary);
+      letter-spacing: 0.5rem;
+      text-align: center;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .pin-input:focus {
+      border-color: var(--brand-orange);
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.15);
+    }
+    .pin-input.error {
+      border-color: var(--brand-red);
+      box-shadow: 0 0 0 3px rgba(220,38,38,0.15);
+      animation: shake 0.4s ease-in-out;
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+
+    .error-msg {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      color: #f87171;
+      margin-top: 0.6rem;
+    }
+
+    .btn-login {
+      width: 100%;
+      margin-top: 1.5rem;
+      padding: 0.9rem;
+      background: linear-gradient(135deg, var(--brand-orange), var(--brand-orange-dark));
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(249,115,22,0.4);
+      letter-spacing: 0.02em;
+    }
+    .btn-login:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(249,115,22,0.5);
+    }
+    .btn-login:active { transform: translateY(0); }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 1.75rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="logo-wrap">
+        <img src="{% static 'images/logo.png' %}" alt="Minu Marketing Logo" class="logo-img"/>
+        <div class="company-name">{{ COMPANY_NAME }}</div>
+        <div class="company-tagline">{{ COMPANY_TAGLINE }}</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h1>Payslip System</h1>
+      <p class="subtitle">Enter your access PIN to continue</p>
+
+      <form method="post" action="{% url 'login' %}" id="pinForm">
+        {% csrf_token %}
+        <label class="pin-label" for="pin">Access PIN</label>
+        <input
+          type="password"
+          id="pin"
+          name="pin"
+          class="pin-input {% if error %}error{% endif %}"
+          maxlength="10"
+          placeholder="• • • • •"
+          autofocus
+          autocomplete="off"
+          inputmode="numeric"
+        />
+        {% if error %}
+        <div class="error-msg">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          {{ error }}
+        </div>
+        {% endif %}
+        <button type="submit" class="btn-login" id="loginBtn">
+          Unlock Dashboard
+        </button>
+      </form>
+
+      <p class="footer-note">Minu Marketing Pvt Ltd &mdash; Payroll Management System</p>
+    </div>
+  </div>
+
+  <script>
+    // Auto-submit on 5 digits
+    document.getElementById('pin').addEventListener('input', function() {
+      if (this.value.length >= 5) {
+        document.getElementById('pinForm').submit();
+      }
+    });
+  </script>
+</body>
+</html>

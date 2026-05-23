@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Employees{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <span class="current">Employees</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Employees</h1>
+    <p class="page-subtitle">{{ total_count }} employee{{ total_count|pluralize }} found</p>
+  </div>
+  <a href="{% url 'employees:create' %}" class="btn btn-primary" id="btn-add-employee">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Add Employee
+  </a>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4" style="padding:1rem 1.25rem;">
+  <form id="search-form"
+        hx-get="{% url 'employees:list' %}"
+        hx-target="#employee-table-wrap"
+        hx-trigger="input delay:400ms from:#search-input, change from:select"
+        hx-push-url="true"
+        class="flex flex-wrap items-center gap-2">
+
+    <div class="search-wrap" style="flex:1;min-width:220px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" name="q" id="search-input" class="form-control"
+             placeholder="Search by name, code, designation…" value="{{ query }}"/>
+    </div>
+
+    <select name="dept" class="form-control" style="width:180px;" id="dept-filter">
+      <option value="">All Departments</option>
+      {% for d in departments %}
+        <option value="{{ d }}" {% if d == dept %}selected{% endif %}>{{ d }}</option>
+      {% endfor %}
+    </select>
+
+    <select name="status" class="form-control" style="width:140px;" id="status-filter">
+      <option value="active"   {% if status == 'active'   %}selected{% endif %}>Active</option>
+      <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
+      <option value="all"      {% if status == 'all'      %}selected{% endif %}>All</option>
+    </select>
+
+    <div class="htmx-indicator spinner" id="search-spinner"></div>
+  </form>
+</div>
+
+<!-- Table -->
+<div id="employee-table-wrap">
+  {% include 'employees/partials/_employee_table.html' %}
+</div>
+{% endblock %}

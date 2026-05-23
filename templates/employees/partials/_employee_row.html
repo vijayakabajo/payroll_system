@@ -1,0 +1,61 @@
+{% load core_tags %}
+<tr id="emp-row-{{ emp.pk }}">
+  <td>
+    <div class="flex items-center gap-2">
+      <!-- Avatar with initials -->
+      <div style="
+        width:34px;height:34px;border-radius:50%;
+        background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+        display:flex;align-items:center;justify-content:center;
+        font-size:0.7rem;font-weight:700;color:#fff;flex-shrink:0;
+      ">{{ emp.initials }}</div>
+      <div>
+        <a href="{% url 'employees:detail' emp.pk %}" class="font-semibold" style="color:var(--text-primary);text-decoration:none;">
+          {{ emp.full_name }}
+        </a>
+        {% if emp.email %}
+        <div class="text-xs text-muted">{{ emp.email }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </td>
+  <td><span style="font-family:monospace;font-size:0.78rem;color:var(--brand);">{{ emp.employee_code }}</span></td>
+  <td class="td-muted">{{ emp.department }}</td>
+  <td class="td-muted">{{ emp.designation }}</td>
+  <td class="td-muted">{{ emp.grade|default:"—" }}</td>
+  <td class="td-muted">{{ emp.phone }}</td>
+  <td class="td-muted">{{ emp.joining_date|date:"d M Y" }}</td>
+  <td>
+    {% if emp.is_active %}
+      <span class="badge badge-success"><span class="badge-dot"></span>Active</span>
+    {% else %}
+      <span class="badge badge-secondary"><span class="badge-dot"></span>Inactive</span>
+    {% endif %}
+  </td>
+  <td>
+    <div class="flex items-center gap-1" style="justify-content:flex-end;">
+      <a href="{% url 'employees:detail' emp.pk %}" class="btn btn-secondary btn-xs" title="View">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </a>
+      <a href="{% url 'employees:edit' emp.pk %}" class="btn btn-secondary btn-xs" title="Edit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </a>
+      <form method="post" action="{% url 'employees:toggle_status' emp.pk %}"
+            hx-post="{% url 'employees:toggle_status' emp.pk %}"
+            hx-target="#emp-row-{{ emp.pk }}"
+            hx-swap="outerHTML">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-secondary btn-xs" title="{% if emp.is_active %}Deactivate{% else %}Activate{% endif %}">
+          {% if emp.is_active %}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          {% else %}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          {% endif %}
+        </button>
+      </form>
+      <a href="{% url 'employees:delete' emp.pk %}" class="btn btn-danger btn-xs" title="Delete">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </a>
+    </div>
+  </td>
+</tr>

@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}{{ employee.full_name }}{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <a href="{% url 'employees:list' %}">Employees</a>
+  <span class="sep">/</span>
+  <span class="current">{{ employee.full_name }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="flex items-center gap-3">
+    <!-- Avatar -->
+    <div style="
+      width:56px;height:56px;border-radius:50%;
+      background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.1rem;font-weight:700;color:#fff;flex-shrink:0;
+      border:3px solid var(--brand-subtle);
+    ">{{ employee.initials }}</div>
+    <div>
+      <h1 class="page-title" style="margin:0;">{{ employee.full_name }}</h1>
+      <p class="page-subtitle">{{ employee.designation }} &mdash; {{ employee.department }}
+        {% if employee.grade %}&bull; Grade {{ employee.grade }}{% endif %}
+      </p>
+    </div>
+  </div>
+  <div class="flex gap-2">
+    {% if employee.is_active %}
+      <span class="badge badge-success" style="padding:.35rem .75rem;font-size:.75rem;"><span class="badge-dot"></span>Active</span>
+    {% else %}
+      <span class="badge badge-secondary" style="padding:.35rem .75rem;font-size:.75rem;"><span class="badge-dot"></span>Inactive</span>
+    {% endif %}
+    <a href="{% url 'employees:edit' employee.pk %}" class="btn btn-secondary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Edit
+    </a>
+    <a href="{% url 'payroll:generate' %}?employee={{ employee.pk }}" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Generate Payslip
+    </a>
+  </div>
+</div>
+
+<div class="grid-2" style="align-items:start;gap:1.25rem;">
+
+  <!-- Left: Profile details -->
+  <div style="display:flex;flex-direction:column;gap:1.25rem;">
+
+    <!-- Contact & Personal -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Personal Details</div>
+        <span class="text-xs text-muted">Joined {{ employee.joining_date|date:"d M Y" }}</span>
+      </div>
+      {% include 'employees/partials/_detail_row.html' with label="Employee Code" value=employee.employee_code mono=True %}
+      {% include 'employees/partials/_detail_row.html' with label="Phone" value=employee.phone %}
+      {% include 'employees/partials/_detail_row.html' with label="Email" value=employee.email|default:"—" %}
+      {% include 'employees/partials/_detail_row.html' with label="Designation" value=employee.designation %}
+      {% include 'employees/partials/_detail_row.html' with label="Department" value=employee.department %}
+      {% include 'employees/partials/_detail_row.html' with label="Grade" value=employee.grade|default:"—" %}
+    </div>
+
+    <!-- Bank Details -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Bank Details</div>
+      </div>
+      {% include 'employees/partials/_detail_row.html' with label="Bank Name" value=employee.bank_name|default:"—" %}
+      {% include 'employees/partials/_detail_row.html' with label="Account Number" value=employee.masked_account|default:"—" mono=True %}
+    </div>
+
+    <!-- Statutory Details -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Statutory Details</div>
+      </div>
+      {% include 'employees/partials/_detail_row.html' with label="EPF A/C No" value=employee.epf_ac_number|default:"—" mono=True %}
+      {% include 'employees/partials/_detail_row.html' with label="UAN Number" value=employee.uan_number|default:"—" mono=True %}
+      {% include 'employees/partials/_detail_row.html' with label="PAN Number" value=employee.pan_number|default:"—" mono=True %}
+      {% include 'employees/partials/_detail_row.html' with label="ESIC Number" value=employee.esi_number|default:"—" mono=True %}
+    </div>
+  </div>
+
+  <!-- Right: Payslip history -->
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div class="card-header" style="padding:1rem 1.25rem;margin:0;">
+      <div>
+        <div class="card-title">Payslip History</div>
+        <div class="card-subtitle">Last 12 payslips</div>
+      </div>
+      <a href="{% url 'payroll:history' %}?employee={{ employee.pk }}" class="btn btn-secondary btn-sm">View All</a>
+    </div>
+
+    {% if payslips %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Period</th>
+            <th>Net Salary</th>
+            <th>Status</th>
+            <th style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ps in payslips %}
+          <tr>
+            <td class="font-semibold">{{ ps.month }} {{ ps.year }}</td>
+            <td style="color:var(--success);font-weight:600;">{{ ps.net_salary|currency }}</td>
+            <td>
+              <span class="badge {{ ps.generation_status|status_badge_class }}">
+                <span class="badge-dot"></span>
+                {{ ps.generation_status|status_label }}
+              </span>
+            </td>
+            <td style="text-align:right;">
+              {% if ps.pdf_file %}
+              <a href="{% url 'payroll:download' ps.pk %}" class="btn btn-secondary btn-xs">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                PDF
+              </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="padding:3rem 2rem;text-align:center;">
+      <p class="text-sm text-muted">No payslips generated yet.</p>
+      <a href="{% url 'payroll:generate' %}?employee={{ employee.pk }}" class="btn btn-primary btn-sm" style="margin-top:.75rem;">
+        Generate First Payslip
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

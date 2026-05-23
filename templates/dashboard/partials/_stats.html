@@ -1,0 +1,39 @@
+{% load core_tags %}
+<div class="grid-4" style="margin-bottom:1.25rem;">
+  <div class="stat-card">
+    <div class="stat-icon orange">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+    </div>
+    <div class="stat-info">
+      <div class="stat-value">{{ total_employees }}</div>
+      <div class="stat-label">Active Employees</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon green">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    </div>
+    <div class="stat-info">
+      <div class="stat-value">{{ payslips_this_month }}</div>
+      <div class="stat-label">Payslips — {{ current_month }}</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon yellow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="stat-info">
+      <div class="stat-value">{{ pending_payslips }}</div>
+      <div class="stat-label">Pending Payslips</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon blue">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+    </div>
+    <div class="stat-info">
+      <div class="stat-value">{{ total_uploads }}</div>
+      <div class="stat-label">Bulk Uploads</div>
+    </div>
+  </div>
+</div>

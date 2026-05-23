@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Employee{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <a href="{% url 'employees:list' %}">Employees</a>
+  <span class="sep">/</span>
+  <span class="current">Delete</span>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:480px;margin:0 auto;padding-top:2rem;">
+  <div class="card" style="text-align:center;padding:2.5rem;">
+    <div style="width:64px;height:64px;border-radius:50%;background:var(--danger-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14H6L5 6"/>
+        <path d="M10 11v6M14 11v6"/>
+        <path d="M9 6V4h6v2"/>
+      </svg>
+    </div>
+    <h1 class="page-title" style="font-size:1.2rem;margin-bottom:.5rem;">Delete Employee?</h1>
+    <p class="text-sm text-muted" style="margin-bottom:1.5rem;">
+      You are about to permanently delete <strong style="color:var(--text-primary);">{{ employee.full_name }}</strong>
+      ({{ employee.employee_code }}). This action cannot be undone and will also delete all associated payslips.
+    </p>
+    <div style="background:var(--danger-bg);border:1px solid var(--danger);border-radius:var(--radius-md);padding:.75rem;margin-bottom:1.5rem;font-size:.8rem;color:var(--danger);">
+      ⚠️ Consider deactivating instead of deleting to preserve payslip history.
+    </div>
+    <div class="flex gap-2" style="justify-content:center;">
+      <a href="{% url 'employees:detail' employee.pk %}" class="btn btn-secondary">Cancel</a>
+      <form method="post" action="{% url 'employees:delete' employee.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger" id="btn-confirm-delete">
+          Yes, Delete Permanently
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

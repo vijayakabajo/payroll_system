@@ -1,0 +1,16 @@
+Django>=5.1,<5.2
+djangorestframework>=3.15
+django-cors-headers>=4.3
+django-environ>=0.11
+django-tailwind-cli>=2.15
+celery[redis]>=5.3
+django-celery-results>=2.5
+redis[hiredis]>=5.0
+WeasyPrint>=62.0
+openpyxl>=3.1
+Pillow>=10.0
+gunicorn>=21.2
+whitenoise>=6.6
+requests>=2.31
+psycopg2-binary>=2.9
+num2words>=0.5.13

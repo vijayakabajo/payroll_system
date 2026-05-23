@@ -1,0 +1,30 @@
+{% load core_tags %}
+<div class="card" style="padding:0;overflow:hidden;">
+  <div class="card-header" style="padding:1rem 1.25rem;margin:0;">
+    <div class="card-title">Recent Activity</div>
+    <a href="{% url 'payroll:history' %}" class="btn btn-secondary btn-sm">View All</a>
+  </div>
+  {% if payslips %}
+  <div style="padding:.5rem 0;">
+    {% for ps in payslips %}
+    <div class="flex items-center gap-2" style="padding:.6rem 1.25rem;border-bottom:1px solid var(--border-light);">
+      <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-dark));display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#fff;flex-shrink:0;">
+        {{ ps.employee.initials }}
+      </div>
+      <div style="flex:1;min-width:0;">
+        <p class="text-sm font-semibold" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ ps.employee.full_name }}</p>
+        <p class="text-xs text-muted">{{ ps.month }} {{ ps.year }}</p>
+      </div>
+      <div style="text-align:right;">
+        <p class="text-sm font-semibold" style="color:var(--success);">{{ ps.net_salary|currency }}</p>
+        <span class="badge {{ ps.generation_status|status_badge_class }}" style="font-size:.65rem;">{{ ps.generation_status|status_label }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="padding:2rem;text-align:center;">
+    <p class="text-sm text-muted">No payslips generated yet.</p>
+  </div>
+  {% endif %}
+</div>

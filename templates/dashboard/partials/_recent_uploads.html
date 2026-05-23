@@ -1,0 +1,38 @@
+{% load core_tags %}
+<div class="card" style="padding:0;overflow:hidden;">
+  <div class="card-header" style="padding:1rem 1.25rem;margin:0;">
+    <div class="card-title">Recent Bulk Uploads</div>
+    <a href="{% url 'bulk_upload:history' %}" class="btn btn-secondary btn-sm">View All</a>
+  </div>
+  {% if uploads %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Month</th><th>Progress</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for u in uploads %}
+        <tr>
+          <td class="text-sm">Upload #{{ u.pk }}</td>
+          <td class="td-muted text-sm">{{ u.month }} {{ u.year }}</td>
+          <td>
+            <div class="progress-bar-wrap" style="width:100px;">
+              {% if u.total_rows > 0 %}
+              <div class="progress-bar-fill" style="width:{% widthratio u.success_count u.total_rows 100 %}%;"></div>
+              {% else %}
+              <div class="progress-bar-fill" style="width:0%;"></div>
+              {% endif %}
+            </div>
+            <span class="text-xs text-muted">{{ u.success_count }}/{{ u.total_rows }}</span>
+          </td>
+          <td><span class="badge {{ u.status|status_badge_class }}">{{ u.status|status_label }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div style="padding:2rem;text-align:center;">
+    <p class="text-sm text-muted">No bulk uploads yet.</p>
+    <a href="{% url 'bulk_upload:upload' %}" class="btn btn-primary btn-sm" style="margin-top:.5rem;">Start Upload</a>
+  </div>
+  {% endif %}
+</div>

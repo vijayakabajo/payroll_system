@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <a href="{% url 'employees:list' %}">Employees</a>
+  <span class="sep">/</span>
+  <a href="{% url 'employees:detail' employee.pk %}">{{ employee.full_name }}</a>
+  <span class="sep">/</span>
+  <span class="current">Edit</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">{{ title }}</h1>
+    <p class="page-subtitle">Update employee information</p>
+  </div>
+  <div class="flex gap-2">
+    <a href="{% url 'employees:detail' employee.pk %}" class="btn btn-secondary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </a>
+  </div>
+</div>
+
+<form method="post" action="{% url 'employees:edit' employee.pk %}" id="employee-form">
+  {% csrf_token %}
+
+  <div class="grid-2" style="align-items:start;">
+    <div style="display:flex;flex-direction:column;gap:1rem;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Personal Information</div>
+        </div>
+        <div class="grid-2" style="gap:1rem;">
+          <div class="form-group">
+            <label class="form-label">Employee Code *</label>
+            {{ form.employee_code }}
+            {% if form.employee_code.errors %}<p class="text-xs text-danger mt-1">{{ form.employee_code.errors.0 }}</p>{% endif %}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            {{ form.full_name }}
+            {% if form.full_name.errors %}<p class="text-xs text-danger mt-1">{{ form.full_name.errors.0 }}</p>{% endif %}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone *</label>
+            {{ form.phone }}
+            {% if form.phone.errors %}<p class="text-xs text-danger mt-1">{{ form.phone.errors.0 }}</p>{% endif %}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            {{ form.email }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date of Joining *</label>
+            {{ form.joining_date }}
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Role & Department</div></div>
+        <div class="grid-2" style="gap:1rem;">
+          <div class="form-group">
+            <label class="form-label">Designation *</label>
+            {{ form.designation }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Department *</label>
+            {{ form.department }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Grade</label>
+            {{ form.grade }}
+          </div>
+          <div class="form-group" style="display:flex;align-items:center;gap:.5rem;padding-top:1.5rem;">
+            {{ form.is_active }}
+            <label for="{{ form.is_active.id_for_label }}" style="font-size:.83rem;color:var(--text-secondary);cursor:pointer;">Employee is Active</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:1rem;">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Bank Details</div></div>
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="form-group">
+            <label class="form-label">Bank Name</label>
+            {{ form.bank_name }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Account Number</label>
+            {{ form.account_number }}
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Statutory Details</div></div>
+        <div class="grid-2" style="gap:1rem;">
+          <div class="form-group">
+            <label class="form-label">EPF A/C Number</label>
+            {{ form.epf_ac_number }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">UAN Number</label>
+            {{ form.uan_number }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">PAN Number</label>
+            {{ form.pan_number }}
+            {% if form.pan_number.errors %}<p class="text-xs text-danger mt-1">{{ form.pan_number.errors.0 }}</p>{% endif %}
+          </div>
+          <div class="form-group">
+            <label class="form-label">ESIC Number</label>
+            {{ form.esi_number }}
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:1rem 1.25rem;">
+        <div class="flex items-center gap-2" style="justify-content:flex-end;">
+          <a href="{% url 'employees:detail' employee.pk %}" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary" id="btn-update">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Update Employee
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}
