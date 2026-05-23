@@ -2,8 +2,6 @@ import logging
 from pathlib import Path
 from django.conf import settings
 from django.template.loader import render_to_string
-import weasyprint
-from urllib.parse import urljoin
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
@@ -21,8 +19,8 @@ class PayslipPDFGenerator:
             employee = payslip.employee
             items = payslip.items.all()
             
-            earnings = [item for item in items if item.component_type == 'earning']
-            deductions = [item for item in items if item.component_type == 'deduction']
+            earnings = [item for item in items if item.component_type == 'EARNING']
+            deductions = [item for item in items if item.component_type == 'DEDUCTION']
             
             # Fetch company config (mocked via SystemConfiguration or fallback)
             from apps.configs.models import SystemConfiguration
@@ -59,9 +57,16 @@ class PayslipPDFGenerator:
             filename = f"{employee.employee_code}_{payslip.month}_{payslip.year}.pdf"
             file_path = output_dir / filename
             
-            # 4. Generate PDF via WeasyPrint
-            html = weasyprint.HTML(string=html_string, base_url=str(settings.BASE_DIR))
-            html.write_pdf(target=str(file_path))
+            # 4. Generate PDF via xhtml2pdf
+            from xhtml2pdf import pisa
+            
+            with open(file_path, "wb") as pdf_file:
+                pisa_status = pisa.CreatePDF(
+                    html_string, dest=pdf_file, link_callback=None
+                )
+                
+            if pisa_status.err:
+                raise Exception("Failed to generate PDF with xhtml2pdf")
             
             # 5. Update Payslip record
             rel_path = f"payslips/{payslip.year}/{payslip.month.lower()}/{filename}"

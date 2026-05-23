@@ -131,8 +131,8 @@ class PayrollEngine:
             ))
 
         # Compute gross (sum of entitled earnings)
-        gross_salary = sum(i.entitled_amount for i in items)
-        gross_earned = sum(i.earned_amount for i in items)
+        gross_salary = sum((i.entitled_amount for i in items), Decimal('0'))
+        gross_earned = sum((i.earned_amount for i in items), Decimal('0'))
 
         # Process deductions (NOT prorated)
         for comp in deduction_components:
@@ -165,7 +165,8 @@ class PayrollEngine:
             ))
 
         total_deductions = sum(
-            i.earned_amount for i in items if i.component_type == 'DEDUCTION'
+            (i.earned_amount for i in items if i.component_type == 'DEDUCTION'),
+            Decimal('0'),
         )
         net_salary = (gross_earned - total_deductions).quantize(TWO_PLACES, ROUND_HALF_UP)
 

@@ -37,9 +37,17 @@ def generate_payslip(request):
                 try:
                     from apps.pdf_generator.generator import PayslipPDFGenerator
                     generator = PayslipPDFGenerator()
-                    generator.generate(payslip)
+                    pdf_path = generator.generate(payslip)
+                    payslip.refresh_from_db(fields=['generation_status', 'pdf_file'])
+                    if not pdf_path:
+                        messages.warning(
+                            request,
+                            'Payslip record was created, but PDF generation failed. Check the server logs.',
+                        )
                 except Exception as e:
                     logger.warning("PDF generation failed: %s", str(e))
+                    payslip.generation_status = 'failed'
+                    payslip.save(update_fields=['generation_status'])
 
                 messages.success(
                     request,
