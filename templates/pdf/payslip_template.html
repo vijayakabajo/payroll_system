@@ -6,13 +6,13 @@
 <style>
     @page {
         size: A4 portrait;
-        margin: 1.5cm;
+        margin: 1.2cm;
     }
     
     body {
         font-family: Helvetica, Arial, sans-serif;
-        font-size: 10pt;
-        color: #333333;
+        font-size: 9pt;
+        color: #1e293b;
     }
     
     table {
@@ -20,64 +20,101 @@
         border-collapse: collapse;
     }
     
-    .header {
-        background-color: #ea580c;
-        color: white;
-        padding: 15px;
-        text-align: center;
+    .header-table {
+        margin-bottom: 20px;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 10px;
     }
     
-    .header h1 {
+    .logo {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .company-name {
+        font-size: 22pt;
+        font-weight: bold;
+        color: #0f172a;
         margin: 0;
-        font-size: 20pt;
+        letter-spacing: -0.5px;
     }
     
-    .header p {
-        margin: 5px 0 0 0;
+    .company-tagline {
         font-size: 10pt;
+        color: #64748b;
+        margin: 2px 0 0 0;
     }
     
-    .title {
-        text-align: center;
-        background-color: #f1f5f9;
-        padding: 10px;
+    .payslip-title {
+        text-align: right;
+        font-size: 16pt;
+        color: #ea580c;
         font-weight: bold;
-        font-size: 12pt;
-        border: 1px solid #cbd5e1;
+        text-transform: uppercase;
+        margin: 0;
     }
     
-    .section-title {
-        background-color: #e2e8f0;
-        padding: 5px;
+    .payslip-month {
+        text-align: right;
+        font-size: 10pt;
+        color: #475569;
         font-weight: bold;
+        margin-top: 5px;
+    }
+    
+    .section-box {
         border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        margin-bottom: 15px;
     }
     
     .info-table td {
-        padding: 4px;
-        border: 1px solid #e2e8f0;
+        padding: 5px 8px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .info-table tr:last-child td {
+        border-bottom: none;
     }
     
     .info-label {
         font-weight: bold;
-        background-color: #f8fafc;
-        width: 15%;
+        color: #64748b;
+        width: 18%;
+        font-size: 8.5pt;
     }
     
     .info-value {
-        width: 35%;
-    }
-    
-    .salary-table th {
-        background-color: #f1f5f9;
-        padding: 8px;
-        border: 1px solid #cbd5e1;
+        width: 32%;
+        color: #334155;
         font-weight: bold;
     }
     
-    .salary-table td {
+    .leave-row td {
+        background-color: #f8fafc;
         padding: 8px;
-        border: 1px solid #e2e8f0;
+        font-size: 8.5pt;
+        border-top: 1px solid #cbd5e1;
+    }
+    
+    .salary-header {
+        background-color: #f1f5f9;
+        font-weight: bold;
+        color: #475569;
+        font-size: 8.5pt;
+        text-transform: uppercase;
+    }
+    
+    .salary-header th {
+        padding: 8px;
+        border-bottom: 2px solid #cbd5e1;
+        border-top: 1px solid #cbd5e1;
+    }
+    
+    .salary-table td {
+        padding: 6px 8px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: top;
     }
     
     .right {
@@ -88,160 +125,230 @@
         text-align: center;
     }
     
+    .subtotal-row td {
+        font-weight: bold;
+        background-color: #f8fafc;
+        border-top: 2px solid #cbd5e1;
+        border-bottom: 2px solid #cbd5e1;
+        padding: 8px;
+    }
+    
     .net-box {
-        margin-top: 20px;
-        border: 2px solid #ea580c;
-        padding: 15px;
-        text-align: center;
         background-color: #fff7ed;
+        border: 1px solid #fdba74;
+        margin-top: 15px;
+    }
+    
+    .net-box td {
+        padding: 15px;
     }
     
     .net-text {
-        color: #ea580c;
-        font-size: 16pt;
+        color: #c2410c;
+        font-size: 14pt;
         font-weight: bold;
     }
     
+    .net-amount {
+        color: #ea580c;
+        font-size: 18pt;
+        font-weight: bold;
+        text-align: right;
+    }
+    
     .words-text {
-        margin-top: 5px;
-        font-size: 10pt;
+        font-size: 9pt;
+        color: #9a3412;
+        margin-top: 4px;
         font-style: italic;
     }
     
     .footer {
-        margin-top: 30px;
+        margin-top: 25px;
         text-align: center;
         font-size: 8pt;
-        color: #666666;
+        color: #94a3b8;
+        border-top: 1px dashed #cbd5e1;
+        padding-top: 15px;
     }
 </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>{{ company_name }}</h1>
-    <p>{{ company_tagline }}</p>
+<!-- Header Section -->
+<table class="header-table">
+    <tr>
+        {% if logo_url %}
+        <td width="85px" valign="middle">
+            <img src="{{ logo_url }}" class="logo">
+        </td>
+        {% endif %}
+        <td valign="middle">
+            <div class="company-name">{{ company_name }}</div>
+            <div class="company-tagline">{{ company_tagline }}</div>
+        </td>
+        <td valign="middle">
+            <div class="payslip-title">PAYSLIP</div>
+            <div class="payslip-month">{{ payslip.month|upper }} {{ payslip.year }}</div>
+        </td>
+    </tr>
+</table>
+
+<!-- Employee Information -->
+<div class="section-box">
+    <table class="info-table">
+        <tr>
+            <td class="info-label">Employee Name</td>
+            <td class="info-value">{{ employee.full_name }}</td>
+            <td class="info-label">Bank Name</td>
+            <td class="info-value">{{ employee.bank_name|default:"-" }}</td>
+        </tr>
+        <tr>
+            <td class="info-label">Employee Code</td>
+            <td class="info-value">{{ employee.employee_code }}</td>
+            <td class="info-label">Account No.</td>
+            <td class="info-value">{{ employee.account_number|default:"-" }}</td>
+        </tr>
+        <tr>
+            <td class="info-label">Designation</td>
+            <td class="info-value">{{ employee.designation }}</td>
+            <td class="info-label">EPF A/C No.</td>
+            <td class="info-value">{{ employee.epf_ac_number|default:"-" }}</td>
+        </tr>
+        <tr>
+            <td class="info-label">Department</td>
+            <td class="info-value">{{ employee.department }}</td>
+            <td class="info-label">UAN No.</td>
+            <td class="info-value">{{ employee.uan_number|default:"-" }}</td>
+        </tr>
+        <tr>
+            <td class="info-label">Date of Joining</td>
+            <td class="info-value">{{ employee.joining_date|date:"d M Y" }}</td>
+            <td class="info-label">PAN No.</td>
+            <td class="info-value">{{ employee.pan_number|default:"-" }}</td>
+        </tr>
+        <tr>
+            <td class="info-label">ESIC No.</td>
+            <td class="info-value">{{ employee.esi_number|default:"-" }}</td>
+            <td class="info-label">Location</td>
+            <td class="info-value">{{ employee.location|default:"-" }}</td>
+        </tr>
+        <tr class="leave-row">
+            <td colspan="4">
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td width="70%" style="border:none; padding:0; font-weight:bold; color:#475569;">
+                            Leaves Taken &nbsp;&nbsp;|&nbsp;&nbsp; 
+                            <span style="font-weight:normal;">CL:</span> {{ payslip.cl_taken|floatformat:1 }} &nbsp;
+                            <span style="font-weight:normal;">SL:</span> {{ payslip.sl_taken|floatformat:1 }} &nbsp;
+                            <span style="font-weight:normal;">LWP:</span> {{ payslip.lwp_taken|floatformat:1 }} &nbsp;
+                            <span style="font-weight:normal;">ML:</span> {{ payslip.ml_taken|floatformat:1 }} &nbsp;
+                            <span style="font-weight:normal;">PL:</span> {{ payslip.pl_taken|floatformat:1 }}
+                        </td>
+                        <td width="30%" class="right" style="border:none; padding:0; font-weight:bold; color:#475569;">
+                            Paid Days: {{ payslip.paid_days }} / {{ payslip.total_days }}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </div>
 
-<div class="title">
-    PAY SLIP FOR {{ payslip.month|upper }} {{ payslip.year }}
+<!-- Salary Components -->
+<div class="section-box">
+    <table>
+        <tr>
+            <!-- Earnings Column -->
+            <td width="55%" valign="top" style="border-right: 1px solid #cbd5e1;">
+                <table class="salary-table">
+                    <tr class="salary-header">
+                        <th align="left" width="50%">Earnings</th>
+                        <th class="right" width="25%">Entitled</th>
+                        <th class="right" width="25%">Earned</th>
+                    </tr>
+                    {% for item in earnings %}
+                    <tr>
+                        <td>{{ item.component_name }}</td>
+                        <td class="right">{{ item.entitled_amount|floatformat:2 }}</td>
+                        <td class="right">{{ item.earned_amount|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="center" style="color:#94a3b8; font-style:italic;">No earnings found</td>
+                    </tr>
+                    {% endfor %}
+                    <!-- We deliberately omit the filler rows to save space and fit on one page -->
+                </table>
+            </td>
+            
+            <!-- Deductions Column -->
+            <td width="45%" valign="top">
+                <table class="salary-table">
+                    <tr class="salary-header">
+                        <th align="left" width="60%">Deductions</th>
+                        <th class="right" width="40%">Amount</th>
+                    </tr>
+                    {% for item in deductions %}
+                    <tr>
+                        <td>{{ item.component_name }}</td>
+                        <td class="right">{{ item.earned_amount|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="center" style="color:#94a3b8; font-style:italic;">No deductions</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+        
+        <!-- Totals Row -->
+        <tr class="subtotal-row">
+            <td valign="top" style="border-right: 1px solid #cbd5e1;">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td align="left" style="border:none; padding:0;">Total Earnings</td>
+                        <td class="right" style="border:none; padding:0;">
+                            <span style="color:#94a3b8; margin-right:20px;">{{ payslip.gross_salary|floatformat:2 }}</span>
+                            <span style="color:#16a34a;">{{ payslip.gross_earned|floatformat:2 }}</span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td valign="top">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td align="left" style="border:none; padding:0;">Total Deductions</td>
+                        <td class="right" style="border:none; padding:0; color:#dc2626;">
+                            {{ payslip.total_deductions|floatformat:2 }}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </div>
 
-<table class="info-table">
-    <tr>
-        <td class="info-label">Name</td>
-        <td class="info-value">{{ employee.full_name }}</td>
-        <td class="info-label">Bank Name</td>
-        <td class="info-value">{{ employee.bank_name|default:"-" }}</td>
-    </tr>
-    <tr>
-        <td class="info-label">Employee Code</td>
-        <td class="info-value">{{ employee.employee_code }}</td>
-        <td class="info-label">Account No</td>
-        <td class="info-value">{{ employee.account_number|default:"-" }}</td>
-    </tr>
-    <tr>
-        <td class="info-label">Designation</td>
-        <td class="info-value">{{ employee.designation }}</td>
-        <td class="info-label">EPF A/C No</td>
-        <td class="info-value">{{ employee.epf_ac_number|default:"-" }}</td>
-    </tr>
-    <tr>
-        <td class="info-label">Department</td>
-        <td class="info-value">{{ employee.department }}</td>
-        <td class="info-label">UAN No</td>
-        <td class="info-value">{{ employee.uan_number|default:"-" }}</td>
-    </tr>
-    <tr>
-        <td class="info-label">Date of Joining</td>
-        <td class="info-value">{{ employee.joining_date|date:"d-M-Y" }}</td>
-        <td class="info-label">PAN No</td>
-        <td class="info-value">{{ employee.pan_number|default:"-" }}</td>
-    </tr>
-</table>
-
-<table class="info-table" style="margin-top: 10px;">
-    <tr>
-        <td style="background-color: #f8fafc; font-weight: bold;">
-            Leave Summary: CL:{{ payslip.cl_taken|floatformat:1 }} | 
-            SL:{{ payslip.sl_taken|floatformat:1 }} | 
-            LWP:{{ payslip.lwp_taken|floatformat:1 }} | 
-            ML:{{ payslip.ml_taken|floatformat:1 }} | 
-            PL:{{ payslip.pl_taken|floatformat:1 }}
-        </td>
-        <td class="right" style="background-color: #f8fafc; font-weight: bold; width: 30%;">
-            Paid Days: {{ payslip.paid_days }} / {{ payslip.total_days }}
-        </td>
-    </tr>
-</table>
-
-<table style="margin-top: 15px;">
-    <tr>
-        <td width="50%" valign="top" style="padding-right: 5px;">
-            <table class="salary-table">
-                <tr>
-                    <th colspan="3" class="center">EARNINGS</th>
-                </tr>
-                <tr>
-                    <th>Component</th>
-                    <th class="right">Entitled</th>
-                    <th class="right">Earned</th>
-                </tr>
-                {% for item in earnings %}
-                <tr>
-                    <td>{{ item.component_name }}</td>
-                    <td class="right">{{ item.entitled_amount|floatformat:2 }}</td>
-                    <td class="right">{{ item.earned_amount|floatformat:2 }}</td>
-                </tr>
-                {% endfor %}
-                {% for _ in "12345678" %}
-                {% if forloop.counter > earnings|length %}
-                <tr><td>&nbsp;</td><td></td><td></td></tr>
-                {% endif %}
-                {% endfor %}
-                <tr>
-                    <td style="font-weight: bold;">Total Earnings</td>
-                    <td class="right" style="font-weight: bold;">{{ payslip.gross_salary|floatformat:2 }}</td>
-                    <td class="right" style="font-weight: bold; color: green;">{{ payslip.gross_earned|floatformat:2 }}</td>
-                </tr>
-            </table>
-        </td>
-        <td width="50%" valign="top" style="padding-left: 5px;">
-            <table class="salary-table">
-                <tr>
-                    <th colspan="2" class="center">DEDUCTIONS</th>
-                </tr>
-                <tr>
-                    <th>Component</th>
-                    <th class="right">Amount</th>
-                </tr>
-                {% for item in deductions %}
-                <tr>
-                    <td>{{ item.component_name }}</td>
-                    <td class="right">{{ item.earned_amount|floatformat:2 }}</td>
-                </tr>
-                {% endfor %}
-                {% for _ in "12345678" %}
-                {% if forloop.counter > deductions|length %}
-                <tr><td>&nbsp;</td><td></td></tr>
-                {% endif %}
-                {% endfor %}
-                <tr>
-                    <td style="font-weight: bold;">Total Deductions</td>
-                    <td class="right" style="font-weight: bold; color: red;">{{ payslip.total_deductions|floatformat:2 }}</td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-</table>
-
+<!-- Net Salary -->
 <div class="net-box">
-    <div class="net-text">NET SALARY: Rs. {{ payslip.net_salary|floatformat:2 }}</div>
-    <div class="words-text">Amount in Words: {{ net_amount_words|title }} Only</div>
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td width="60%" valign="middle" style="padding:0;">
+                <div class="net-text">NET SALARY PAYABLE</div>
+                <div class="words-text">{{ net_amount_words|title }} Only</div>
+            </td>
+            <td width="40%" class="net-amount" valign="middle" style="padding:0;">
+                ₹ {{ payslip.net_salary|floatformat:2 }}
+            </td>
+        </tr>
+    </table>
 </div>
 
+<!-- Footer -->
 <div class="footer">
-    * This is a computer-generated document. No signature is required.
+    This is a computer-generated document and does not require a physical signature.<br>
+    Please contact Human Resources for any discrepancies.
 </div>
 
 </body>

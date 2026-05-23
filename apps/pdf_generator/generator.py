@@ -30,7 +30,7 @@ class PayslipPDFGenerator:
             
             # Use absolute file path for the logo for WeasyPrint
             logo_path = Path(settings.BASE_DIR) / 'static' / 'images' / 'logo.png'
-            logo_url = f"file:///{logo_path.as_posix()}" if logo_path.exists() else ""
+            logo_url = logo_path.as_posix() if logo_path.exists() else ""
             
             from apps.core.utils import amount_in_words
             
