@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: payroll-app
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application"
