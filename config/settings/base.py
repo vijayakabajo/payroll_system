@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
 # Database — PostgreSQL (Render or Local Fallback)
-if os.environ.get("DATABASE_URL") and os.environ.get("DATABASE_URL") != "postgresql://payroll_user:O1AVVvxKUwT3YICWy0HtyUeGCJL6UJmb@dpg-d88ligbeo5us7382iq30-a.oregon-postgres.render.com/jalan_groups":
+if os.environ.get("DATABASE_URL"):
     DATABASES = {
         'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
     }
