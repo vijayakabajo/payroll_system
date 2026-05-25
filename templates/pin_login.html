@@ -9,208 +9,215 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   {% load static %}
+  <script>
+    (function(){
+      var t = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --brand-orange: #f97316;
-      --brand-orange-dark: #ea580c;
-      --brand-red: #dc2626;
-      --bg-dark: #0f172a;
-      --bg-card: #1e293b;
-      --bg-input: #0f172a;
-      --text-primary: #f1f5f9;
-      --text-muted: #94a3b8;
-      --border: #334155;
+    [data-theme="light"] {
+      --bg-base: #f8f9fb;
+      --bg-card: #ffffff;
+      --bg-input: #f3f4f6;
+      --text-primary: #111827;
+      --text-muted: #9ca3af;
+      --border: #e5e7eb;
+      --brand: #f97316;
+      --brand-dark: #ea580c;
+      --danger: #dc2626;
+    }
+    [data-theme="dark"] {
+      --bg-base: #0f1117;
+      --bg-card: #1c1e26;
+      --bg-input: #12141a;
+      --text-primary: #e5e7eb;
+      --text-muted: #6b7280;
+      --border: #2a2d37;
+      --brand: #f97316;
+      --brand-dark: #ea580c;
+      --danger: #f87171;
     }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--bg-dark);
+      background: var(--bg-base);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
-      position: relative;
-    }
-
-    /* Animated background orbs */
-    body::before, body::after {
-      content: '';
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.15;
-      animation: drift 8s ease-in-out infinite alternate;
-    }
-    body::before {
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, #f97316, #dc2626);
-      top: -200px; left: -200px;
-    }
-    body::after {
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, #7c3aed, #1d4ed8);
-      bottom: -150px; right: -150px;
-      animation-delay: -4s;
-    }
-    @keyframes drift {
-      from { transform: translate(0, 0) scale(1); }
-      to   { transform: translate(30px, 20px) scale(1.05); }
+      transition: background-color 0.3s ease;
     }
 
     .login-wrapper {
       position: relative;
       z-index: 10;
       width: 100%;
-      max-width: 420px;
+      max-width: 400px;
       padding: 1.5rem;
     }
 
     .login-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 1.5rem;
-      padding: 3rem 2.5rem;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05) inset;
-      backdrop-filter: blur(20px);
+      border-radius: 1rem;
+      padding: 2.5rem 2rem;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
     }
 
     .logo-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
 
     .logo-img {
-      width: 90px;
-      height: 90px;
+      width: 72px;
+      height: 72px;
       border-radius: 50%;
       object-fit: cover;
-      border: 3px solid var(--brand-orange);
-      box-shadow: 0 0 30px rgba(249,115,22,0.4);
-      margin-bottom: 1rem;
+      border: 2px solid var(--border);
+      margin-bottom: 0.75rem;
     }
 
     .company-name {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 700;
       color: var(--text-primary);
       text-align: center;
-      letter-spacing: -0.02em;
     }
 
     .company-tagline {
-      font-size: 0.75rem;
-      color: var(--brand-orange);
+      font-size: 0.7rem;
+      color: var(--text-muted);
       text-align: center;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-top: 0.2rem;
+      margin-top: 0.15rem;
     }
 
     .divider {
       height: 1px;
-      background: linear-gradient(to right, transparent, var(--border), transparent);
-      margin: 1.5rem 0;
+      background: var(--border);
+      margin: 1.25rem 0;
     }
 
     h1 {
-      font-size: 1.5rem;
+      font-size: 1.25rem;
       font-weight: 700;
       color: var(--text-primary);
       text-align: center;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.25rem;
     }
 
     .subtitle {
-      font-size: 0.875rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
 
     .pin-label {
       display: block;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
     }
 
     .pin-input {
       width: 100%;
       background: var(--bg-input);
       border: 1.5px solid var(--border);
-      border-radius: 0.75rem;
-      padding: 0.875rem 1rem;
-      font-size: 1.5rem;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      font-size: 1.35rem;
       font-family: 'Inter', monospace;
       color: var(--text-primary);
       letter-spacing: 0.5rem;
       text-align: center;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color 0.2s;
       outline: none;
     }
     .pin-input:focus {
-      border-color: var(--brand-orange);
-      box-shadow: 0 0 0 3px rgba(249,115,22,0.15);
+      border-color: var(--brand);
     }
     .pin-input.error {
-      border-color: var(--brand-red);
-      box-shadow: 0 0 0 3px rgba(220,38,38,0.15);
+      border-color: var(--danger);
       animation: shake 0.4s ease-in-out;
     }
     @keyframes shake {
       0%,100% { transform: translateX(0); }
-      25% { transform: translateX(-8px); }
-      75% { transform: translateX(8px); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
     }
 
     .error-msg {
       display: flex;
       align-items: center;
       gap: 0.4rem;
-      font-size: 0.8rem;
-      color: #f87171;
-      margin-top: 0.6rem;
+      font-size: 0.78rem;
+      color: var(--danger);
+      margin-top: 0.5rem;
     }
 
     .btn-login {
       width: 100%;
-      margin-top: 1.5rem;
-      padding: 0.9rem;
-      background: linear-gradient(135deg, var(--brand-orange), var(--brand-orange-dark));
+      margin-top: 1.25rem;
+      padding: 0.75rem;
+      background: var(--brand);
       color: #fff;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       font-weight: 600;
       border: none;
-      border-radius: 0.75rem;
+      border-radius: 0.5rem;
       cursor: pointer;
-      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
-      box-shadow: 0 4px 20px rgba(249,115,22,0.4);
-      letter-spacing: 0.02em;
+      transition: background 0.2s;
     }
     .btn-login:hover {
-      opacity: 0.92;
-      transform: translateY(-1px);
-      box-shadow: 0 6px 28px rgba(249,115,22,0.5);
+      background: var(--brand-dark);
     }
-    .btn-login:active { transform: translateY(0); }
 
     .footer-note {
       text-align: center;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
-      margin-top: 1.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .theme-toggle-login {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .theme-toggle-login:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
     }
   </style>
 </head>
 <body>
+  <!-- Theme toggle on login page -->
+  <button class="theme-toggle-login" id="login-theme-toggle" onclick="toggleThemeLogin()" title="Toggle theme">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+  </button>
+
   <div class="login-wrapper">
     <div class="login-card">
       <div class="logo-wrap">
@@ -260,6 +267,26 @@
         document.getElementById('pinForm').submit();
       }
     });
+
+    // Theme toggle for login page
+    function toggleThemeLogin() {
+      var html = document.documentElement;
+      var current = html.getAttribute('data-theme');
+      var next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      updateLoginThemeIcon(next);
+    }
+    function updateLoginThemeIcon(theme) {
+      var btn = document.getElementById('login-theme-toggle');
+      if (!btn) return;
+      if (theme === 'dark') {
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+      } else {
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+      }
+    }
+    updateLoginThemeIcon(document.documentElement.getAttribute('data-theme') || 'light');
   </script>
 </body>
 </html>
